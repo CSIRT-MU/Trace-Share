@@ -1,0 +1,16 @@
+---
+- hosts: all
+  become: yes
+
+      
+  tasks:
+    - name: update apt cache
+      apt: update_cache=yes
+    - name: install build-essential
+      apt: name=build-essential state=present
+    - name: install tshark
+      apt: name=tshark state=present
+    - name: install nmap
+      apt: name=nmap state=present
+    - name: install tree
+      apt: name=tree state=present

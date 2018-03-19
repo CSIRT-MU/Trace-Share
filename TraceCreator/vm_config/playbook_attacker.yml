@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: yes
+
+      
+  tasks:
+    - apt_repository:
+        repo: 'ppa:wireshark-dev/stable'
+    - name: update apt cache
+      apt: update_cache=yes
+    - name: install build-essential
+      apt: name=build-essential state=present
+    - name: install wireshark
+      apt: name=wireshark state=present
+    - name: install tshark
+      apt: name=tshark state=present
+    - name: install nmap
+      apt: name=nmap state=present
+    - name: install paramiko for easy ssh; prerequisite for capture_attacks.py
+      apt: name=python-paramiko state=present
+    - name: install tree
+      apt: name=tree state=present
+    - name: install tcpreplay
+      apt: name=tcpreplay state=present
+      
