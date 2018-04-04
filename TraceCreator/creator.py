@@ -36,7 +36,7 @@
 Script to run commands from generator.yaml file and captures the resulting network traffic into pcap files.
 
 Elevated privileges are necessary due to tshark capture.
-Use: $ sudo python capture_attacks.py
+Use: $ sudo python creator.py
 """
 
 
@@ -64,7 +64,7 @@ def parse_script_arguments():
     parser.add_argument('-c', '--commandfile',
                         help='Path to the commands configuration file.',
                         type=argparse.FileType('r'), required=False,
-                        default='/vagrant/configuration/generator.yaml')
+                        default='/vagrant/configuration/creator.yaml')
     parser.add_argument('-d', '--capturedirectory',
                         help='Directory for captured traffic.',
                         type=str, required=False,

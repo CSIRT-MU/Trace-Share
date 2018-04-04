@@ -193,7 +193,7 @@ Vagrant.configure("2") do |config|
 		# Run traffic generation script
 		attacker.vm.provision :shell do |s|
 			# PYTHONUNBUFFERED: make ansible display real-time output of shell
-            s.inline = "export PYTHONUNBUFFERED=1; python /vagrant/generator.py"
+            s.inline = "export PYTHONUNBUFFERED=1; python /vagrant/creator.py"
         end
 	end
 end

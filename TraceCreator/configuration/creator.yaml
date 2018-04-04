@@ -11,8 +11,8 @@
 # Update state of guests and generate capture for a "nmap -sW 203.0.113.101 -v" without ICMP traffic.
 - defenders:
     - ip: 203.0.113.101
-      configure: bash /vagrant/configuration/generator/victim_101.sh
+      configure: bash /vagrant/configuration/creator/victim_101.sh
   attacker:
-    configure: bash /vagrant/configuration/generator/attacker.sh
+    configure: bash /vagrant/configuration/creator/attacker.sh
     filter:  not icmp
     command: nmap -sW 203.0.113.101 -v
