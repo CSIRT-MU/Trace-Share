@@ -1,188 +1,199 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# All Vagrant configuration is done below. The "2" in Vagrant.configure
-# configures the configuration version (we support older styles for
-# backwards compatibility). Please don't change it unless you know what
-# you're doing.
+#
+# BSD 3-Clause License
+#
+# Copyright (c) 2018, CSIRT-MU, Masaryk University
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# * Neither the name of the copyright holder nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+# """
+# This script serves as an input for Vagrant provisioner to deploy whole TraceCreator framework.
+#
+# All configuration should be set in "./provision.yml" file. Please don't change the code below unless you
+# know what you're doing.
+#
+# Provisioning may take a long time, do not stop it or suspend it earlier, it
+# can cause unexpected behavior.
+#
+#
+# Usage:
+#  * vagrant up              -- deploy and provision the framework
+#  * vagrant up <node name>  -- deploy and provision specified node
+#  * vagrant halt            -- stop the running framework
+#  * vagrant destroy         -- destroy the deployed framework
+#  * vagrant -h              -- show common vagrant commands
+# """
+
+
+require 'yaml'  # YAML configuration parser
+
+
+class TraceCreatorProvisioning
+	# """
+	# Class for Ansible and bash provisioning of TraceCreator to provision based on configuration file.
+	# """
+
+	def initialize(configuration)
+		# """
+		# Initialize class based on the given configuration.
+		#
+		# :param configuration: Parsed configuration in dictionary format
+		# """
+		# Store configuration settings
+		@provision_configuration = configuration
+	end
+
+	def install_python(virtual_guest)
+		# """
+		# Install python on given guest using standard shell provisioning.
+		#
+		# :param virtual_guest: Initialized Vagrant guest
+		# """
+		virtual_guest.vm.provision "shell" do |s|
+				s.inline = "apt-get update && apt-get install -y python"
+		end
+	end
+
+	def run_ansible(virtual_guest, playbook)
+		# """
+		# Run ansible on given guest.
+		#
+		# :param virtual_guest: Initialized Vagrant guest
+		# :param playbook: Ansible playbook
+		# """
+		# Check if playbook is defined
+		if playbook
+	        # Run Ansible provisioning
+		    virtual_guest.vm.provision :ansible_local do |ansible|
+			    ansible.playbook = playbook
+		    end
+		end
+	end
+
+	def run_bash(virtual_guest, playbook)
+		# """
+		# Run bash commands on given guest.
+		#
+		# :param virtual_guest: Initialized Vagrant guest
+		# :param playbook: Bash configuration file
+		# """
+		# Check if playbook is defined
+		if playbook
+	        # Run bash commands
+		    virtual_guest.vm.provision :shell, path: playbook
+		end
+	end
+
+	def provision(virtual_guest)
+		# """
+		# Run provisioning on given guest.
+		#
+		# :param virtual_guest: Initialized Vagrant guest
+		# """
+		# Install python to guest (necessary to run ansible_local)
+		install_python(virtual_guest)
+		# Get guest type
+		guest_type = (virtual_guest.vm.hostname).start_with?("defender") ? "defenders" : "attacker"
+		# Run ansible provisioning
+		run_ansible(virtual_guest, @provision_configuration[guest_type]["ansible"])
+		# Run bash provisioning
+		run_bash(virtual_guest, @provision_configuration[guest_type]["bash"])
+	end
+end
+
+
+# """
+# All Vagrant configuration is done below.
+#
+# The "2" in Vagrant.configure configures the configuration version (Vagrant
+# support older styles for backwards compatibility). Please don't change it
+# unless you know what you're doing.
+# """
 Vagrant.configure("2") do |config|
-    # The most common configuration options are documented and commented below.
-    # For a complete reference, please see the online documentation at
-    # https://docs.vagrantup.com.
+	# For a complete reference of configuration, please see the online documentation at https://docs.vagrantup.com
 
-    # Every Vagrant development environment requires a box. You can search for
-    # boxes at https://atlas.hashicorp.com/search.
-    # config.vm.box = "ubuntu/xenial64"
+	# Load Vagrant configuration
+	provision_config = YAML.load_file("configuration/provision.yml")
 
-    # GENERAL CONFIG:
-    # VM BOX CONFIGURATION
-    config.vm.box = "ubuntu/trusty64"
-    config.vm.box_url = "ubuntu/trusty64"
-	# config.vm.box_version = "20170920.0.0"
-	config.vm.box_check_update = false
-    # ubuntu/trusty64 already has python2 installed, medusa with ssh
-    # ubuntu/xenial64 has medusa without ssh module, need python2 installed
+	# Create TraceCreator provisioning object
+	trace_creator_provisioning = TraceCreatorProvisioning.new(provision_config)
 
-    # IP CONFIGURATION
-    attacker_ip = "203.0.113.2"
-    victim_prefix = "203.0.113."
-	mask = "255.255.255.0"
-    
-    # NUMBER OF victims
-    # Spark Slave IP address starts at victim_prefix.101 and increments by one.
-    number_of_victims = 2
-    
-    # if host machine does not support ansible (Windows), use ansible on guest
-    # provisioner = Vagrant::Util::Platform.windows? ? :ansible_local : :ansible
-    provisioner = :ansible_local
+    # IP address range definition of defender guests
+	defender_upper_ip_limit = 101 + provision_config["defenders"]["number"] - 1
 
-    # SHARED FOLDER
-    config.vm.synced_folder ".", "/vagrant"
-        
-		
-    # VM PROPERTIES CONFIGURATION
-    # ATTACKER
-    attacker_mem_mb = 1024
-	attacker_cpu_num = 1
-	# VICTIM
-    victim_mem_mb = 512
-	victim_cpu_num = 1
+	# Iterate over defender guests
+	(101..defender_upper_ip_limit).each do |i|
+	    # Generate guest name and IP address
+		defender_hostname = "defender#{i}"
+		defender_ip = "#{provision_config["defenders"]["ip_prefix"]}#{i}"
 
-    # VICTIMS STARTUP:
-    upper_ip_limit = 101 + number_of_victims - 1  # Defines victims range
-    victim_list = Array.new  # Initialize list of victims for ansible
+		# Deployment of "defenderXXX" guest
+		config.vm.define "defender#{i}" do |defender|
+			defender.vm.hostname = defender_hostname
+            defender.vm.box = provision_config["defenders"]["box"]
+            defender.vm.box_url = provision_config["defenders"]["box_url"]
+			defender.vm.network :private_network, ip: defender_ip, netmask: provision_config["common"]["mask"]
 
-    # Iterate over victims
-    (101..upper_ip_limit).each do |i|
-        victim_hostname = "victim#{i}"
-        victim_ip =  "#{victim_prefix}#{i}"
-        victim_list.push(victim_hostname)
-    
+			defender.vm.provider :virtualbox do |v|
+				v.customize ["modifyvm", :id, "--memory", provision_config["defenders"]["memory"]]
+				v.customize ["modifyvm", :id, "--cpus", provision_config["defenders"]["cpu"]]
+				v.customize ["modifyvm", :id, "--name", "defender#{i}"]
+                v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]  # Set adapter to promiscuous mode
+			end
 
-        # Defining VM properties
-        config.vm.define "victim#{i}" do |node|
-            node.vm.hostname = victim_hostname
-            node.vm.network :private_network, ip: victim_ip, netmask: mask
+			# Run provisioning
+            trace_creator_provisioning.provision(defender)
+		end
+	end
 
-            node.vm.provider :virtualbox do |v|
-                v.customize ["modifyvm", :id, "--name", "victim#{i}"]
-                # sets adapter to promiscuous mode
-                v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
-                v.customize ["modifyvm", :id, "--memory", victim_mem_mb]
-				v.customize ["modifyvm", :id, "--cpus", victim_cpu_num]
-            end
+	# Deployment of "attacker" guest
+	config.vm.define "attacker" do |attacker|
+		attacker.vm.hostname = "attacker"
+		attacker.vm.box = provision_config["attacker"]["box"]
+        attacker.vm.box_url = provision_config["attacker"]["box_url"]
+		attacker.vm.network :private_network, ip: provision_config["attacker"]["ip"], netmask: provision_config["common"]["mask"]
 
-            # Install python2 for ansible for ubuntu/xenial64
-            node.vm.provision :shell do |s|
-                s.inline = "apt-get install -y python"
-            end
-            
-            node.vm.provision provisioner do |ansible|
-                ansible.verbose = "v"
-                ansible.playbook = "vm_config/playbook_victim.yml"
-            end
-                
-            # install apps
-            config.vm.provision :shell, path: "vm_config/bootstrap_victim.sh"
+		attacker.vm.provider :virtualbox do |v|
+			v.customize ["modifyvm", :id, "--memory", provision_config["attacker"]["memory"]]
+			v.customize ["modifyvm", :id, "--cpus", provision_config["attacker"]["cpu"]]
+			v.customize ["modifyvm", :id, "--name", "attacker"]
+			v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]  # Set adapter to promiscuous mode
+		end
 
-        end
-    end
-    
+		# Run provisioning
+        trace_creator_provisioning.provision(attacker)
 
-
-    # ATTACKER STARTUP:
-    config.vm.define "attacker" do |attacker|
-        attacker.vm.hostname = "attacker"
-
-        attacker.vm.network :private_network, ip: attacker_ip, netmask: mask
-
-        attacker.vm.provider :virtualbox do |v|
-            v.customize ["modifyvm", :id, "--name", "attacker"]
-            # sets adapter to promiscuous mode
-            v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
-            v.customize ["modifyvm", :id, "--memory", attacker_mem_mb]
-			v.customize ["modifyvm", :id, "--cpus", attacker_cpu_num]
-        end
-
-        # Install python2 for ansible for ubuntu/xenial64
-        attacker.vm.provision :shell do |s|
-            s.inline = "apt-get install -y python"
-        end
-        
-        attacker.vm.provision provisioner do |ansible|
-            ansible.verbose = "v"
-            ansible.playbook = "vm_config/playbook_attacker.yml"
-        end     
-
-        # install apps
-        attacker.vm.provision :shell, path: "vm_config/bootstrap_attacker.sh"
-
-        attacker.vm.provision :shell do |s|
+		# Run traffic generation script
+		attacker.vm.provision :shell do |s|
 			# PYTHONUNBUFFERED: make ansible display real-time output of shell
-            s.inline = "export PYTHONUNBUFFERED=1; python /vagrant/capture_attacks/capture_attacks.py"
+            s.inline = "export PYTHONUNBUFFERED=1; python /vagrant/generator.py"
         end
-
-    end
-
-
-    
-    # Disable automatic box update checking. If you disable this, then
-    # boxes will only be checked for updates when the user runs
-    # `vagrant box outdated`. This is not recommended.
-    # config.vm.box_check_update = false
-
-    # Create a forwarded port mapping which allows access to a specific port
-    # within the machine from a port on the host machine. In the example below,
-    # accessing "localhost:8080" will access port 80 on the guest machine.
-    # config.vm.network "forwarded_port", guest: 80, host: 8080
-    
-    # Create a forwarded port mapping which allows access to a specific port
-	# within the machine from a port on the host machine and only allow access
-	# via 127.0.0.1 to disable public access
-	# config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
-
-    # Create a private network, which allows host-only access to the machine
-    # using a specific IP.
-    # config.vm.network "private_network", ip: "192.168.33.10"
-
-    # Create a public network, which generally matched to bridged network.
-    # Bridged networks make the machine appear as another physical device on
-    # your network.
-    # config.vm.network "public_network"
-
-    # Share an additional folder to the guest VM. The first argument is
-    # the path on the host to the actual folder. The second argument is
-    # the path on the guest to mount the folder. And the optional third
-    # argument is a set of non-required options.
-    # config.vm.synced_folder "../data", "/vagrant_data"
-
-    # Provider-specific configuration so you can fine-tune various
-    # backing providers for Vagrant. These expose provider-specific options.
-    # Example for VirtualBox:
-    #
-    # config.vm.provider "virtualbox" do |vb|
-    #   # Display the VirtualBox GUI when booting the machine
-    #   vb.gui = true
-    #
-    #   # Customize the amount of memory on the VM:
-    #   vb.memory = "1024"
-    # end
-    #
-    # View the documentation for the provider you are using for more
-    # information on available options.
-
-    # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
-    # such as FTP and Heroku are also available. See the documentation at
-    # https://docs.vagrantup.com/v2/push/atlas.html for more information.
-    # config.push.define "atlas" do |push|
-    #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
-    # end
-
-    # Enable provisioning with a shell script. Additional provisioners such as
-    # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-    # documentation for more information about their specific syntax and use.
-    # config.vm.provision "shell", inline: <<-SHELL
-    #   apt-get update
-    #   apt-get install -y apache2
-    # SHELL
+	end
 end

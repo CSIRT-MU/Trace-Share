@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: yes
+      
+  tasks:
+    # Mandatory TraceCreator tasks
+    - name: Update apt cache
+      apt: update_cache=yes
+    - name: Install build-essential
+      apt: name=build-essential state=present
+
+    # Other tasks specific for given job
+    - name: Install nmap
+      apt: name=nmap state=present

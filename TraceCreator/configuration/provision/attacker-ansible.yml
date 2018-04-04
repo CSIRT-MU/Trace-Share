@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+    # Mandatory TraceCreator tasks
+    - name: Add wireshark repository
+      apt_repository:
+        repo: 'ppa:wireshark-dev/stable'
+    - name: Update apt cache
+      apt: update_cache=yes
+    - name: Install build-essential
+      apt: name=build-essential state=present
+    - name: Install wireshark
+      apt: name=wireshark state=present
+    - name: Install tshark
+      apt: name=tshark state=present
+    - name: Install paramiko for easy ssh; prerequisite for generator.py
+      apt: name=python-paramiko state=present
+    - name: Install tree
+      apt: name=tree state=present
+
+    # Other tasks specific for given job
+    - name: install nmap
+      apt: name=nmap state=present
