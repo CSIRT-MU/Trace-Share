@@ -6,6 +6,6 @@ Open Platform for Network Traces Sharing
 
 ## Getting started
 
-- [TraceCreator](TraceCreator) – virtual environment for a creation of packet traces
+- [TraceCreator](TraceCreator) – virtual environment for the creation of packet traces
 
-- [datasets](datasets) – example of annotated units (will be deleted after web platform introduction)
+- [datasets](datasets) – an example of annotated units (will be deleted after web platform introduction)

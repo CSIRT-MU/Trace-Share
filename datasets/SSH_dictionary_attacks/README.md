@@ -4,7 +4,7 @@ Annotated units of SSH dictionary attack performed by `medusa`, `hydra` and `ncr
 
 ## Hydra 8.4 ([hydra.zip](hydra.zip))
 
-Web page: https://www.thc.org/thc-hydra/
+Webpage: https://www.thc.org/thc-hydra/
 
 **Annotated units:**
 - hydra-1_tasks.pcap
@@ -31,7 +31,7 @@ Web page: https://www.thc.org/thc-hydra/
 
 ## Medusa 2.2 ([medusa.zip](medusa.zip))    
 
-Web page: http://foofus.net/goons/jmk/medusa/medusa.html  
+Webpage: http://foofus.net/goons/jmk/medusa/medusa.html  
 
 **Annotated units:**
 - medusa-1_tasks.pcap
@@ -58,7 +58,7 @@ Web page: http://foofus.net/goons/jmk/medusa/medusa.html
             
 ## Ncrack 0.5 ([ncrack.zip](ncrack.zip))
 
-Web page: https://nmap.org/ncrack/ 
+Webpage: https://nmap.org/ncrack/ 
             
 **Annotated units:**
 - ncrack-paranoid.pcap

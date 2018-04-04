@@ -1,6 +1,6 @@
 # TraceCreator
 
-A framework for an automated creation of full packet traces based on virtualization platforms.
+A framework for the automated creation of full packet traces based on virtualization platforms.
 
 <!-- TODO: Needs update! -->
 
@@ -19,6 +19,6 @@ additional provisioning files in Ansible od Bash
 - `$ vagrant up` – create and configure guest machines according to configuration files and run specified commands (all 
 capture files together with logs will be available in ./capture/ directory)
 
-- `$ vagrant provision attacker` – run creation script again if any error occurred
+- `$ vagrant provision attacker` – rerun creation script if an error occurred
 
 - `$ vagrant destroy` – destroy the virtual environment after the collection
