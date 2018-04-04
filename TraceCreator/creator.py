@@ -64,7 +64,7 @@ def parse_script_arguments():
     parser.add_argument('-c', '--commandfile',
                         help='Path to the commands configuration file.',
                         type=argparse.FileType('r'), required=False,
-                        default='/vagrant/configuration/creator.yaml')
+                        default='/vagrant/configuration/creator.yml')
     parser.add_argument('-d', '--capturedirectory',
                         help='Directory for captured traffic.',
                         type=str, required=False,
