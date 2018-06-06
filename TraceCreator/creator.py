@@ -36,7 +36,8 @@
 Script to run commands from generator.yaml file and captures the resulting network traffic into pcap files.
 
 Elevated privileges are necessary due to tshark capture.
-Use: $ sudo python creator.py
+Usage:
+    $ sudo python creator.py
 """
 
 
