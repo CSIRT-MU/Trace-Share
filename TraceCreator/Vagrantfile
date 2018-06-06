@@ -156,8 +156,9 @@ Vagrant.configure("2") do |config|
 			defender.vm.provider :virtualbox do |v|
 				v.customize ["modifyvm", :id, "--memory", provision_config["defenders"]["memory"]]
 				v.customize ["modifyvm", :id, "--cpus", provision_config["defenders"]["cpu"]]
-				v.customize ["modifyvm", :id, "--name", "defender#{i}"]
+				v.customize ["modifyvm", :id, "--name", "TraceCreator-defender#{i}"]
 				v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]  # Set adapter to promiscuous mode
+				v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
 			end
 
 			# Run provisioning
