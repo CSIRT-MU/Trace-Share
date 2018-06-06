@@ -94,14 +94,16 @@ def get_task_id(task, timestamp):
     return re.sub(r'[ @#$%^&*<>{}:|;\'\\\"/]', r'_', task_id)
 
 
-def host_configure(host, command, timestamp, args):
+def host_configure(host, command, timestamp, output_directory, username, password):
     """
     Run given command on the host via SSH connection.
 
     :param host: IP address of the remote host
     :param command: command to run
     :param timestamp: timestamp of the task
-    :param args: creator script arguments
+    :param output_directory: directory path to store commands output
+    :param username: SSH connection username
+    :param password: SSH connection password
     """
     # Show configuration info
     cprint("[info] Configuration of host: " + host, "green")
@@ -111,7 +113,7 @@ def host_configure(host, command, timestamp, args):
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     # Connect to given host
-    ssh_client.connect(host, username=args.username, password=args.password)
+    ssh_client.connect(host, username=username, password=password)
 
     # Execute given command and store its result
     stdin_handle, stdout_handle, stderr_handle = ssh_client.exec_command(command)
@@ -121,7 +123,7 @@ def host_configure(host, command, timestamp, args):
     # Create output directory if STDOUT or STDERR obtained
     if stdout or stderr:
         # Specify directory name
-        directory_name = "{path}/{task_id}/".format(path=args.output_directory, task_id=get_task_id(task, timestamp))
+        directory_name = "{path}/{task_id}/".format(path=output_directory, task_id=get_task_id(task, timestamp))
         # Create directory if not exists
         if not os.path.exists(directory_name):
             os.makedirs(directory_name)
@@ -261,7 +263,8 @@ def process_creator_task(task, capture_directory, args):
         # Iterate through all configuration tasks
         for host_configuration in task["configuration"]:
             # Process host configuration
-            host_configure(host_configuration["ip"], host_configuration["command"], task_timestamp, args)
+            host_configure(host_configuration["ip"], host_configuration["command"], task_timestamp,
+                           args.output_directory, args.username, args.password)
 
     # Start tshark capture
     tshark_process = start_tshark(task, args.interface, capture_directory, task_timestamp)
