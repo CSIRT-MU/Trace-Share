@@ -77,7 +77,7 @@ class TraceCreatorProvisioning
 		# :param virtual_guest: Initialized Vagrant guest
 		# """
 		virtual_guest.vm.provision "shell" do |s|
-				s.inline = "apt-get update && apt-get install -y python"
+			s.inline = "apt-get update && apt-get install -y python"
 		end
 	end
 
@@ -90,10 +90,10 @@ class TraceCreatorProvisioning
 		# """
 		# Check if playbook is defined
 		if playbook
-	        # Run Ansible provisioning
-		    virtual_guest.vm.provision :ansible_local do |ansible|
-			    ansible.playbook = playbook
-		    end
+			# Run Ansible provisioning
+			virtual_guest.vm.provision :ansible_local do |ansible|
+				ansible.playbook = playbook
+			end
 		end
 	end
 
@@ -106,8 +106,8 @@ class TraceCreatorProvisioning
 		# """
 		# Check if playbook is defined
 		if playbook
-	        # Run bash commands
-		    virtual_guest.vm.provision :shell, path: playbook
+			# Run bash commands
+			virtual_guest.vm.provision :shell, path: playbook
 		end
 	end
 
@@ -145,31 +145,31 @@ Vagrant.configure("2") do |config|
 	# Create TraceCreator provisioning object
 	trace_creator_provisioning = TraceCreatorProvisioning.new(provision_config)
 
-    # IP address range definition of defender guests
+	# IP address range definition of defender guests
 	defender_upper_ip_limit = 101 + provision_config["defenders"]["number"] - 1
 
 	# Iterate over defender guests
 	(101..defender_upper_ip_limit).each do |i|
-	    # Generate guest name and IP address
+		# Generate guest name and IP address
 		defender_hostname = "defender#{i}"
 		defender_ip = "#{provision_config["defenders"]["ip_prefix"]}#{i}"
 
 		# Deployment of "defenderXXX" guest
 		config.vm.define "defender#{i}" do |defender|
 			defender.vm.hostname = defender_hostname
-            defender.vm.box = provision_config["defenders"]["box"]
-            defender.vm.box_url = provision_config["defenders"]["box_url"]
+			defender.vm.box = provision_config["defenders"]["box"]
+			defender.vm.box_url = provision_config["defenders"]["box_url"]
 			defender.vm.network :private_network, ip: defender_ip, netmask: provision_config["common"]["mask"]
 
 			defender.vm.provider :virtualbox do |v|
 				v.customize ["modifyvm", :id, "--memory", provision_config["defenders"]["memory"]]
 				v.customize ["modifyvm", :id, "--cpus", provision_config["defenders"]["cpu"]]
 				v.customize ["modifyvm", :id, "--name", "defender#{i}"]
-                v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]  # Set adapter to promiscuous mode
+				v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]  # Set adapter to promiscuous mode
 			end
 
 			# Run provisioning
-            trace_creator_provisioning.provision(defender)
+			trace_creator_provisioning.provision(defender)
 		end
 	end
 
@@ -177,7 +177,7 @@ Vagrant.configure("2") do |config|
 	config.vm.define "attacker" do |attacker|
 		attacker.vm.hostname = "attacker"
 		attacker.vm.box = provision_config["attacker"]["box"]
-        attacker.vm.box_url = provision_config["attacker"]["box_url"]
+		attacker.vm.box_url = provision_config["attacker"]["box_url"]
 		attacker.vm.network :private_network, ip: provision_config["attacker"]["ip"], netmask: provision_config["common"]["mask"]
 
 		attacker.vm.provider :virtualbox do |v|
@@ -188,12 +188,12 @@ Vagrant.configure("2") do |config|
 		end
 
 		# Run provisioning
-        trace_creator_provisioning.provision(attacker)
+		trace_creator_provisioning.provision(attacker)
 
 		# Run traffic generation script
 		attacker.vm.provision :shell do |s|
 			# PYTHONUNBUFFERED: make ansible display real-time output of shell
-            s.inline = "export PYTHONUNBUFFERED=1; python /vagrant/creator.py"
-        end
+			s.inline = "export PYTHONUNBUFFERED=1; python /vagrant/creator.py"
+		end
 	end
 end
