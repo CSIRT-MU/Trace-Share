@@ -21,7 +21,7 @@ attacker:
     # Number of virtual CPUs
     cpu: 1
     # Ansible provision file (provisioned before bash)
-    ansible: configuration/provision/attacker-ansible.yml
+    ansible: configuration/provision/ansible/attacker.yml
     # Bash provision file
     bash: null
 
@@ -40,6 +40,6 @@ defenders:
     # Number of virtual CPUs
     cpu: 1
     # Ansible provision file (provisioned before bash)
-    ansible: configuration/provision/defenders-ansible.yml
+    ansible: configuration/provision/ansible/defender.yml
     # Bash provision file
-    bash: configuration/provision/defenders-bash.sh
+    bash: configuration/provision/bash/defender.sh

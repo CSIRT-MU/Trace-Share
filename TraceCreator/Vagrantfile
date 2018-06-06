@@ -83,6 +83,8 @@ class TraceCreatorProvisioning
 		    virtual_guest.vm.provision :ansible_local do |ansible|
 		        # Use latest Ansible
 		        ansible.install_mode = "pip"
+                # Run provisioning with sudo privileges
+                ansible.become = true
 		        # Set given playbook
 			    ansible.playbook = playbook
 		    end

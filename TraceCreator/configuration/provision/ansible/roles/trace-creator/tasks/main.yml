@@ -1,0 +1,28 @@
+---
+
+- name: Update apt cache
+  apt: update_cache=yes
+
+- name: Install build essentials
+  apt: name=build-essential state=present
+
+- name: Add wireshark repository
+  apt_repository:
+    repo: 'ppa:wireshark-dev/stable'
+
+- name: Install wireshark
+  apt: name=wireshark state=present
+
+- name: Install tshark
+  apt: name=tshark state=present
+
+- name: Install Python module paramiko
+  apt: name=python-paramiko state=present
+
+- name: Install Python module termcolor
+  apt: name=python-termcolor state=present
+
+- name: Enable password login for SSH
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^(#\s*)?PasswordAuthentication " line="PasswordAuthentication yes"
+  notify:
+    - Restart SSH service
