@@ -9,9 +9,9 @@ A framework for the automated creation of full packet traces based on virtualiza
 We have it all prepared for you. The basic setup is preconfigured. You have to only set following configuration files 
 to prepare the environment:
 
-- [configuration/provision.yml](configuration/provision.yml) – set system properties of virtual guests and specify 
+- [configuration/deployment.yml](configuration/deployment.yml) – set system properties of virtual guests and specify 
 additional provisioning files in Ansible od Bash
-- [configuration/creator.yml](configuration/trace-creator.yml) – specify commands that should be performed on guests
+- [configuration/trace-creator.yml](configuration/trace-creator.yml) – specify commands that should be performed on guests
 
 
 ### Basic commands

@@ -130,7 +130,7 @@ Vagrant.configure("2") do |config|
 	# For a complete reference of configuration, please see the online documentation at https://docs.vagrantup.com
 
 	# Load Vagrant configuration
-	provision_config = YAML.load_file("configuration/provision.yml")
+	provision_config = YAML.load_file("configuration/deployment.yml")
 
 	# Create TraceCreator provisioning object
 	trace_creator_provisioning = TraceCreatorProvisioning.new(provision_config)
