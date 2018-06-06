@@ -1,0 +1,20 @@
+# """
+# This configuration allows to define tasks that will be executed by the trace-creator.py generator script together with
+# additional provision and filter options. You can also use "netem" tool in configure option to change properties of
+# network interface.
+# """
+---
+
+# Generate capture for a "nmap -sW 203.0.113.101 -v" without any filter or additional provisioning
+- name: Simple nmap
+  command: nmap -sW 203.0.113.101 -v
+
+# Update state of guests and generate capture for a "nmap -sW 203.0.113.101 -v" without ICMP traffic.
+- name: Nmap without ICMP
+  configuration:
+    - ip: 203.0.113.101
+      command: bash /vagrant/configuration/trace-creator/defender.sh
+    - ip: 203.0.113.2
+      command: bash /vagrant/configuration/trace-creator/attacker.sh
+  filter:  not icmp
+  command: nmap -sW 203.0.113.101 -v

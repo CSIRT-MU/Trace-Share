@@ -11,7 +11,7 @@ to prepare the environment:
 
 - [configuration/provision.yml](configuration/provision.yml) – set system properties of virtual guests and specify 
 additional provisioning files in Ansible od Bash
-- [configuration/creator.yml](configuration/creator.yml) – specify commands that should be performed on guests
+- [configuration/creator.yml](configuration/trace-creator.yml) – specify commands that should be performed on guests
 
 
 ### Basic commands

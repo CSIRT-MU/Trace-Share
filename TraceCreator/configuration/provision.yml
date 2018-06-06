@@ -12,8 +12,8 @@ common:
 # Attacker guest that perform given commands and provides captures of network traffic and logs
 attacker:
     # Select Vagrant guest virtual machine box. You can search for boxes at https://atlas.hashicorp.com/search
-    box: ubuntu/trusty64
-    box_url: ubuntu/trusty64
+    box: ubuntu/bionic64
+    box_url: ubuntu/bionic64
     # Selected IP addresses should not exists in your current network
     ip: 203.0.113.2
     # Size of main memory is in MB
@@ -30,8 +30,8 @@ defenders:
     # Number of defender guests
     number: 1
     # Select Vagrant guest virtual machine box. You can search for boxes at https://atlas.hashicorp.com/search
-    box: ubuntu/trusty64
-    box_url: ubuntu/trusty64
+    box: ubuntu/bionic64
+    box_url: ubuntu/bionic64
     # Selected IP addresses should not exists in your current network
     # IP addresses of defender guests starts at ip_prefix.101 and increments by one
     ip_prefix: 203.0.113.

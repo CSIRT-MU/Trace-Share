@@ -70,17 +70,6 @@ class TraceCreatorProvisioning
 		@provision_configuration = configuration
 	end
 
-	def install_python(virtual_guest)
-		# """
-		# Install python on given guest using standard shell provisioning.
-		#
-		# :param virtual_guest: Initialized Vagrant guest
-		# """
-		virtual_guest.vm.provision "shell" do |s|
-				s.inline = "apt-get update && apt-get install -y python"
-		end
-	end
-
 	def run_ansible(virtual_guest, playbook)
 		# """
 		# Run ansible on given guest.
@@ -92,6 +81,9 @@ class TraceCreatorProvisioning
 		if playbook
 	        # Run Ansible provisioning
 		    virtual_guest.vm.provision :ansible_local do |ansible|
+		        # Use latest Ansible
+		        ansible.install_mode = "pip"
+		        # Set given playbook
 			    ansible.playbook = playbook
 		    end
 		end
@@ -117,8 +109,6 @@ class TraceCreatorProvisioning
 		#
 		# :param virtual_guest: Initialized Vagrant guest
 		# """
-		# Install python to guest (necessary to run ansible_local)
-		install_python(virtual_guest)
 		# Get guest type
 		guest_type = (virtual_guest.vm.hostname).start_with?("defender") ? "defenders" : "attacker"
 		# Run ansible provisioning
@@ -183,8 +173,9 @@ Vagrant.configure("2") do |config|
 		attacker.vm.provider :virtualbox do |v|
 			v.customize ["modifyvm", :id, "--memory", provision_config["attacker"]["memory"]]
 			v.customize ["modifyvm", :id, "--cpus", provision_config["attacker"]["cpu"]]
-			v.customize ["modifyvm", :id, "--name", "attacker"]
+			v.customize ["modifyvm", :id, "--name", "TraceCreator-attacker"]
 			v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]  # Set adapter to promiscuous mode
+			v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
 		end
 
 		# Run provisioning
@@ -193,7 +184,7 @@ Vagrant.configure("2") do |config|
 		# Run traffic generation script
 		attacker.vm.provision :shell do |s|
 			# PYTHONUNBUFFERED: make ansible display real-time output of shell
-            s.inline = "export PYTHONUNBUFFERED=1; python /vagrant/creator.py"
+            s.inline = "export PYTHONUNBUFFERED=1; python /vagrant/trace-creator.py"
         end
 	end
 end

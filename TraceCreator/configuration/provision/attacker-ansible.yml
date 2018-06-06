@@ -19,6 +19,13 @@
       apt: name=python-paramiko state=present
     - name: Install tree
       apt: name=tree state=present
+    - name: Install termcolor
+      apt: name=python-termcolor state=present
+
+    - name: Enable password login
+      lineinfile: dest=/etc/ssh/sshd_config regexp="^(#\s*)?PasswordAuthentication " line="PasswordAuthentication yes"
+    - name: restart sshd
+      service: name=ssh state=restarted
 
     # Other tasks specific for given job
     - name: install nmap

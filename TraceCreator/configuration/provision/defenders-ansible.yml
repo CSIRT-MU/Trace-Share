@@ -8,6 +8,10 @@
       apt: update_cache=yes
     - name: Install build-essential
       apt: name=build-essential state=present
+    - name: Enable password login
+      lineinfile: dest=/etc/ssh/sshd_config regexp="^(#\s*)?PasswordAuthentication " line="PasswordAuthentication yes"
+    - name: restart sshd
+      service: name=ssh state=restarted
 
     # Other tasks specific for given job
     - name: Install nmap
