@@ -5,7 +5,7 @@ A simple script providing basic information about a packet capture. The result i
 
 ## Usage
 
-Script functions will be part of the web application but you can easily use them separately.
+Script functions will be part of the web application, but you can easily use them separately.
 
 ### Basic commands
 
