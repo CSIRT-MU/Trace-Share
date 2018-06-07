@@ -59,7 +59,7 @@ require 'yaml'  # YAML configuration parser
 class TraceCreatorProvisioning
 	# """
 	# Class for Ansible and bash provisioning of TraceCreator to provision based on
-  # configuration file.
+	# configuration file.
 	# """
 
 	def initialize(vagrant_config)
@@ -70,116 +70,116 @@ class TraceCreatorProvisioning
 		# """
 		# Store Vagrant configuration settings
 		@vagrant_config = vagrant_config
-    # Set capture guest configuration to false
-    @creator_guest = false
+		# Set capture guest configuration to false
+		@creator_guest = false
 	end
 
 
-  def provision_ansible(vagrant_guest, playbook)
-    # """
-    # Add Ansible provisioning configuration to the given guest.
-    #
-    # :param vagrant_guest: initialized Vagrant guest
-    # :param playbook: Ansible playbook
-    # """
-    # Check if playbook is defined
-    if playbook
-      # Define Ansible local provisioning
-		  vagrant_guest.vm.provision :ansible_local do |ansible|
-        # Use the latest Ansible
-		    ansible.install_mode = "pip"
-        # Use provisioning with sudo privileges
-        ansible.become = true
-        # Set given playbook
-			  ansible.playbook = playbook
-      end
-    end
-  end
+	def provision_ansible(vagrant_guest, playbook)
+		# """
+		# Add Ansible provisioning configuration to the given guest.
+		#
+		# :param vagrant_guest: initialized Vagrant guest
+		# :param playbook: Ansible playbook
+		# """
+		# Check if playbook is defined
+		if playbook
+			# Define Ansible local provisioning
+			vagrant_guest.vm.provision :ansible_local do |ansible|
+				# Use the latest Ansible
+				ansible.install_mode = "pip"
+				# Use provisioning with sudo privileges
+				ansible.become = true
+				# Set given playbook
+				ansible.playbook = playbook
+			end
+		end
+	end
 
 
-  def provision_bash(vagrant_guest, script)
-    # """
-    # Add BASH provisioning configuration to the given guest.
-    #
-    # :param vagrant_guest: initialized Vagrant guest
-    # :param script: bash script to run
-    # """
-    # Check if bash script is defined
-    if script
-      # Use specified bash commands
-      vagrant_guest.vm.provision :shell, path: script
-    end
-  end
+	def provision_bash(vagrant_guest, script)
+		# """
+		# Add BASH provisioning configuration to the given guest.
+		#
+		# :param vagrant_guest: initialized Vagrant guest
+		# :param script: bash script to run
+		# """
+		# Check if bash script is defined
+		if script
+			# Use specified bash commands
+			vagrant_guest.vm.provision :shell, path: script
+		end
+	end
 
 
-  def start_creator(vagrant_guest)
-    # """
-    # Start trace-creator script to run defined commands and store traffic capture.
-    #
-    # :param vagrant_guest: initialized Vagrant guest
-    # """
-    # Define shell provisioning
-    vagrant_guest.vm.provision :shell do |s|
-      # PYTHONUNBUFFERED: make vagrant display real-time output of the shell
-      s.inline = "export PYTHONUNBUFFERED=1; python /vagrant/trace-creator.py"
-    end
-  end
+	def start_creator(vagrant_guest)
+		# """
+		# Start trace-creator script to run defined commands and store traffic capture.
+		#
+		# :param vagrant_guest: initialized Vagrant guest
+		# """
+		# Define shell provisioning
+		vagrant_guest.vm.provision :shell do |s|
+			# PYTHONUNBUFFERED: make vagrant display real-time output of the shell
+			s.inline = "export PYTHONUNBUFFERED=1; python /vagrant/trace-creator.py"
+		end
+	end
 
 
-  def deploy_guest(guest_config)
-    # """
-    # Set guest deployment and provisioning based on given configuration.
-    #
-    # :param guest_config: parsed configuration of one guest
-    # """
-    # Check if the guest have capture attribute set to "true"
-    if guest_config["creator"] and !@creator_guest
-      # Store guest configuration to deploy it as last
-      @creator_guest = guest_config
-    else
-      # Set guest deployment
-      @vagrant_config.vm.define guest_config["name"] do |guest|
-        # Guest settings
-        guest.vm.hostname = guest_config["name"]
-        guest.vm.box = guest_config["box"]
-        guest.vm.box_url = guest_config["box_url"]
-        guest.vm.network :private_network, ip: guest_config["ip"],
-          netmask: guest_config["mask"]
-          
-        # VirtualBox settings
-        guest.vm.provider :virtualbox do |v|
-          v.customize ["modifyvm", :id, "--name", guest_config["name"]]
-          v.customize ["modifyvm", :id, "--cpus", guest_config["cpu"]]
-          v.customize ["modifyvm", :id, "--memory", guest_config["memory"]]
-          v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
-          v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
-        end
+	def deploy_guest(guest_config)
+		# """
+		# Set guest deployment and provisioning based on given configuration.
+		#
+		# :param guest_config: parsed configuration of one guest
+		# """
+		# Check if the guest have capture attribute set to "true"
+		if guest_config["creator"] and !@creator_guest
+			# Store guest configuration to deploy it as last
+			@creator_guest = guest_config
+		else
+			# Set guest deployment
+			@vagrant_config.vm.define guest_config["name"] do |guest|
+				# Guest settings
+				guest.vm.hostname = guest_config["name"]
+				guest.vm.box = guest_config["box"]
+				guest.vm.box_url = guest_config["box_url"]
+				guest.vm.network :private_network, ip: guest_config["ip"],
+					netmask: guest_config["mask"]
+
+				# VirtualBox settings
+				guest.vm.provider :virtualbox do |v|
+					v.customize ["modifyvm", :id, "--name", guest_config["name"]]
+					v.customize ["modifyvm", :id, "--cpus", guest_config["cpu"]]
+					v.customize ["modifyvm", :id, "--memory", guest_config["memory"]]
+					v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+					v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
+				end
         
-        # Define Ansible provisioning
-        provision_ansible(guest, guest_config["ansible"])
-        # Define bash provisioning
-        provision_bash(guest, guest_config["bash"])
+				# Define Ansible provisioning
+				provision_ansible(guest, guest_config["ansible"])
+				# Define bash provisioning
+				provision_bash(guest, guest_config["bash"])
         
-        # Check if start trace-creator script 
-        if guest_config["creator"]
-          # Start trace-creator script
-          start_creator(guest)
-        end
-      end
-    end
-  end
+				# Check if start trace-creator script 
+				if guest_config["creator"]
+					# Start trace-creator script
+					start_creator(guest)
+				end
+			end
+		end
+	end
 
 
-  def deploy_creator()
-    # """
-    # Start deployment of the guest selected as a creator.
-    #
-    # """
-    # Deploy stored creator_guest
-    if @creator_guest
-      deploy_guest(@creator_guest)
-    end
-  end
+	def deploy_creator()
+		# """
+		# Start deployment of the guest selected as a creator.
+		#
+		# """
+		# Deploy stored creator_guest
+		if @creator_guest
+			deploy_guest(@creator_guest)
+		end
+	end
 end
 
 
@@ -192,20 +192,20 @@ end
 # """
 Vagrant.configure("2") do |config|
 	# For a complete reference of configuration, please see the online
-  # documentation at https://docs.vagrantup.com
-  
-  # Load Vagrant configuration
+	# documentation at https://docs.vagrantup.com
+
+	# Load Vagrant configuration
 	provision_configuration = YAML.load_file("configuration/deployment.yml")
-  
-  # Create TraceCreator provisioning object
+
+	# Create TraceCreator provisioning object
 	trace_creator_provisioning = TraceCreatorProvisioning.new(config)
-  
-  # Iterate through all guests specified in the configuration
-  provision_configuration.each do |guest_configuration|
-    # Deploy selected guest and run provisioning
-    trace_creator_provisioning.deploy_guest(guest_configuration)
-  end
-  
-  # Deploy guest that is selected as the creator
-  trace_creator_provisioning.deploy_creator()
+
+	# Iterate through all guests specified in the configuration
+	provision_configuration.each do |guest_configuration|
+		# Deploy selected guest and run provisioning
+		trace_creator_provisioning.deploy_guest(guest_configuration)
+	end
+
+	# Deploy guest that is selected as the creator
+	trace_creator_provisioning.deploy_creator()
 end
