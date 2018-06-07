@@ -41,7 +41,7 @@ Needs elevated privileges due to tshark ability to store files in a shared folde
 Requirements:
     * tshark
     * Python 3
-    * Python modules: termcolor, paramiko,YAML
+    * Python modules: termcolor, paramiko, YAML
 
 Usage:
     # ./trace-creator.py -c <configuration_file> -o <output_directory> -i <capture_interface>
