@@ -1,45 +1,49 @@
 # """
 # This configuration allows to set system properties of TraceCreator virtual
 # guests provisioned by Vagrant.
+#
+# All guest attributes in this example are mandatory.
 # """
 ---
 
-# Common configuration of all guests
-common:
-    # Mask of the virtual private network
-    mask: 255.255.255.0
+- name: attacker
+  # Select Vagrant guest virtual machine box.
+  # You can search for boxes at https://atlas.hashicorp.com/search
+  box: ubuntu/bionic64
+  box_url: ubuntu/bionic64
+  # Selected IP addresses should not exists in your current network
+  ip: 203.0.113.2
+  # Mask of the virtual private network
+  mask: 255.255.255.0
+  # Number of virtual CPUs
+  cpu: 1
+  # Size of main memory is in MB
+  memory: 1024
+  # Ansible provision file (provisioned before bash)
+  ansible: configuration/provision/ansible/attacker.yml
+  # Bash provision file
+  bash: null
+  # Indicate if run trace-creator capture script.
+  # Only one guest can have capture set to "true"! The guest will be deployed as last.
+  creator: true
 
-# Attacker guest that perform given commands and provides captures of network traffic and logs
-attacker:
-    # Select Vagrant guest virtual machine box. You can search for boxes at https://atlas.hashicorp.com/search
-    box: ubuntu/bionic64
-    box_url: ubuntu/bionic64
-    # Selected IP addresses should not exists in your current network
-    ip: 203.0.113.2
-    # Size of main memory is in MB
-    memory: 1024
-    # Number of virtual CPUs
-    cpu: 1
-    # Ansible provision file (provisioned before bash)
-    ansible: configuration/provision/ansible/attacker.yml
-    # Bash provision file
-    bash: null
-
-# Defender guests that reply to request of the attacker
-defenders:
-    # Number of defender guests
-    number: 1
-    # Select Vagrant guest virtual machine box. You can search for boxes at https://atlas.hashicorp.com/search
-    box: ubuntu/bionic64
-    box_url: ubuntu/bionic64
-    # Selected IP addresses should not exists in your current network
-    # IP addresses of defender guests starts at ip_prefix.101 and increments by one
-    ip_prefix: 203.0.113.
-    # Size of main memory is in MB
-    memory: 1024
-    # Number of virtual CPUs
-    cpu: 1
-    # Ansible provision file (provisioned before bash)
-    ansible: configuration/provision/ansible/defender.yml
-    # Bash provision file
-    bash: configuration/provision/bash/defender.sh
+- name: defender
+  # Select Vagrant guest virtual machine box.
+  # You can search for boxes at https://atlas.hashicorp.com/search
+  box: ubuntu/bionic64
+  box_url: ubuntu/bionic64
+  # Selected IP addresses should not exists in your current network
+  ip: 203.0.113.101
+  # Mask of the virtual private network
+  mask: 255.255.255.0  
+  # Number of virtual CPUs
+  cpu: 1
+  # Size of main memory is in MB
+  memory: 1024
+  # Ansible provision file (provisioned before bash)
+  ansible: configuration/provision/ansible/defender.yml
+  # Bash provision file
+  bash: configuration/provision/bash/defender.sh
+  # Indicate if run trace-creator capture script.
+  # Only one guest can have capture set to "true"! The guest will be deployed as last.
+  creator: false
