@@ -45,7 +45,7 @@ Requirements:
     * Python modules: termcolor
 
 Usage:
-    $ ./trace-info.py -f <capture_file> -t -p -c
+    $ ./trace-analyzer.py -f <capture_file> -t -p -c
 """
 
 # Common python modules
