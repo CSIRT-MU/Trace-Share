@@ -95,7 +95,7 @@ def run_command(command):
     # Check if error occurred
     if stderr:
         # Show error info
-        cprint("[error] Command \"{command}\" returned an error: \n".format(command=command), "red")
+        cprint("[error] Command \"{command}\" returned an error:\n{error}".format(command=command, error=stderr), "red")
         # Return nothing
         return None
     else:
