@@ -8,6 +8,8 @@ Open Platform for Network Traces Sharing
 
 - [TraceCreator](TraceCreator) – virtual environment for the creation of packet traces
 
-- [TraceAnalyzer](TraceAnalyzer) – a tool providing basic information about trace captures
+- [TraceAnalyzer](TraceAnalyzer) – script providing basic information about packet trace captures
+
+- [TraceNormalizer](TraceNormalizer) - script facilitating normalization of packet trace capture
 
 - [datasets](datasets) – an example of annotated units (will be deleted after web platform introduction)
