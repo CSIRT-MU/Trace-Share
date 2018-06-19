@@ -111,7 +111,7 @@ def process_tshark_conversations(tshark_output):
     :return: array of dictionaries with parsed tshark conversations
     """
     # Remove white spaces and split lines
-    output_lines = tshark_output.strip().split('\n')
+    output_lines = tshark_output.decode('utf-8').strip().split('\n')
     # Remove header and bottom lines
     output_lines = output_lines[5:-1]
 
@@ -172,7 +172,7 @@ def process_capture_file_properties(capinfos_output):
     :return: dictionary with parsed properties
     """
     # Remove white spaces and split lines
-    output_lines = capinfos_output.strip().split('\n')
+    output_lines = capinfos_output.decode('utf-8').strip().split('\n')
 
     # Dictionary to store result
     capinfos_result = {}
@@ -217,7 +217,7 @@ def process_mac_ip_pairs(tshark_output):
     :return: array of dictionaries with parsed MAC-IP pairs
     """
     # Remove white spaces and split lines
-    output_lines = tshark_output.strip().split('\n')
+    output_lines = tshark_output.decode('utf-8').strip().split('\n')
     # Get only unique output lines
     output_lines_unique = set(output_lines)
 
