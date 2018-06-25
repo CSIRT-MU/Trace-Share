@@ -1,8 +1,6 @@
-# TraceShare
+<img src="https://csirt.ics.muni.cz/public/traceshare/logo.png" style="padding-bottom: 20px; width: 50%"/>
 
-Open Platform for Network Traces Sharing
-
-<!-- TODO: Needs update! -->
+Open platform for network traces creation and sharing 
 
 ## Getting started
 
