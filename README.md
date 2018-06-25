@@ -1,4 +1,4 @@
-<img src="https://csirt.ics.muni.cz/public/traceshare/logo.png" style="padding-bottom: 20px; width: 50%"/>
+<img src="https://is.muni.cz/www/325314/logo.png" style="padding-bottom: 20px" width="60%"/>
 
 Open platform for network traces creation and sharing 
 
