@@ -1,6 +1,8 @@
-<img src="https://is.muni.cz/www/325314/logo.png" style="padding-bottom: 20px" width="60%"/>
+<img src="https://is.muni.cz/www/325314/logo.png" width="50%"/>
 
-Open platform for network traces creation and sharing 
+&nbsp;
+
+The open platform for network traces creation and sharing 
 
 ## Getting started
 
