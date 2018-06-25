@@ -96,7 +96,7 @@ def run_command(command):
     stdout, stderr = command_process.communicate()
 
     # Check if error occurred (and check error message to handle bittwiste stderr-stdout mixed output)
-    if stderr and ("written" not in stderr):
+    if stderr and ("written" not in stderr.decode('utf-8')):
         # Show error info
         cprint("[error] Command \"{command}\" returned an error:\n{error}".format(command=command, error=stderr), "red")
         # Return nothing
