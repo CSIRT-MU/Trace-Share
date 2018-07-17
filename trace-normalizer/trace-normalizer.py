@@ -70,13 +70,9 @@ def check_requirements():
 
     :return: True if all tools are available, False otherwise
     """
-    # Iterate through required tools
     for tool in ["tcprewrite", "editcap", "bittwiste"]:
-        # Check if tool is available
         if not find_executable(tool):
-            # Required tool not found
             return False
-    # All required tools are available
     return True
 
 
@@ -87,22 +83,14 @@ def run_command(command):
     :param command: command to be run
     :return: command output or None if error occurred
     """
-    # Show command info
     cprint("[info] Running command: " + command, "green")
-
-    # Execute command
     command_process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # Wait to process finish and get process results
     stdout, stderr = command_process.communicate()
 
-    # Check if error occurred (and check error message to handle bittwiste stderr-stdout mixed output)
     if stderr and ("written" not in stderr.decode('utf-8')):
-        # Show error info
         cprint("[error] Command \"{command}\" returned an error:\n{error}".format(command=command, error=stderr), "red")
-        # Return nothing
         return None
     else:
-        # Return STDOUT
         return stdout
 
 
@@ -113,9 +101,7 @@ def convert_to_pcap(input_file, output_file):
     :param input_file: capture file to convert
     :param output_file: output file path
     """
-    # Specify convert command for editcap
     command = "editcap -F pcap {input_file} {output_file}".format(input_file=input_file, output_file=output_file)
-    # Run specified command
     run_command(command)
 
 
@@ -126,9 +112,7 @@ def convert_to_pcapng(input_file, output_file):
     :param input_file: capture file to convert
     :param output_file: output file path
     """
-    # Specify convert command for editcap
     command = "editcap -F pcapng {input_file} {output_file}".format(input_file=input_file, output_file=output_file)
-    # Run specified command
     run_command(command)
 
 
@@ -140,11 +124,9 @@ def reset_timestamp(input_file, output_file, configuration):
     :param output_file: temporary output file path
     :param configuration: parsed script configuration
     """
-    # Specify time reset command for editcap
     command = "editcap -t -{timestamp} {input_file} {output_file}".format(
         timestamp=configuration["timestamp"], input_file=input_file, output_file=output_file
     )
-    # Run specified command
     run_command(command)
 
 
@@ -156,19 +138,14 @@ def normalize_ip_addresses(input_file, output_file, configuration):
     :param output_file: temporary output file path
     :param configuration: parsed script configuration
     """
-    # Get IP addresses mapping
     addresses_mapping = ""
     for mapping in configuration["IP"]:
-        # Append pair to the mapping
         addresses_mapping += "{original}:{new},".format(original=mapping["original"], new=mapping["new"])
-    # Remove last comma
     addresses_mapping = addresses_mapping[:-1]
 
-    # Specify IP addresses normalization command for tcprewrite
     command = "tcprewrite --infile {input_file} --outfile {output_file} --pnat={addresses_mapping}".format(
         input_file=input_file, output_file=output_file, addresses_mapping=addresses_mapping
     )
-    # Run specified command
     run_command(command)
 
 
@@ -185,40 +162,33 @@ def normalize_mac_addresses(input_file, output_file, configuration):
     # Handlers for a current output files
     tmp_input = input_file
     tmp_output = output_file
-    # Iterate through all MAC addresses pairs
+
     for mapping in configuration["MAC"]:
-        # Specify MAC addresses normalization command for bittwiste
         command = "bittwiste -I {input_file} -O {output_file} -T eth -s {original},{new} -d {original},{new}".format(
             input_file=tmp_input, output_file=tmp_output, original=mapping["original"], new=mapping["new"]
         )
-        # Run specified command
         run_command(command)
-
         # Switch output file handlers
         tmp_input, tmp_output = tmp_output, tmp_input
 
-    # Copylast temporary file to output_file if it is not specified output_file
+    # Copy last temporary file to output_file if it is not specified output_file
     if tmp_input != output_file:
         shutil.copy2(tmp_input, output_file)
 
 
 if __name__ == "__main__":
-    # Define application arguments (automatically creates -h argument)
+    # Argument parser automatically creates -h argument
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input_file", help="Capture filename to normalize.", type=str, required=True)
     parser.add_argument("-o", "--output_file", help="Filename for a normalized capture.", type=str, required=True)
     parser.add_argument("-c", "--configuration", help="Configuration JSON with mapping of IP and MAC addresses.",
                         type=argparse.FileType('r'), required=False, default="./trace-normalizer.json")
-    # Parse arguments
     args = parser.parse_args()
 
-    # Check if all tool requirements are satisfied
     if not check_requirements():
-        # Show error message and exit
         cprint("[error] Requirements missing, install \"tcprewrite\", \"editcap\", and \"bittwiste\" tools!", "red")
         sys.exit(1)
 
-    # Load the configuration file
     try:
         configuration = json.load(args.configuration)
     except ValueError as exc:
@@ -229,38 +199,26 @@ if __name__ == "__main__":
     tmp_capture_1 = "normalizer_tmp_capture-1.pcap"
     tmp_capture_2 = "normalizer_tmp_capture-2.pcap"
 
-    # Convert given capture to PCAP format (required by tcprewrite and bittwiste tools)
+    # PCAP format is required by tcprewrite and bittwiste tools
     cprint("[info] Converting input file to PCAP format...", "green")
     convert_to_pcap(args.input_file, tmp_capture_1)
 
-    # Check configuration if timestamp is defined
     if "timestamp" in configuration:
-        # Show initial info
         cprint("[info] Starting trace normalization...", "green")
-        # Reset timestamp in given file and store result into the temporary file
         reset_timestamp(tmp_capture_1, tmp_capture_2, configuration)
 
-    # Check configuration if IP addresses are defined
     if "IP" in configuration:
-        # Show initial info
         cprint("[info] Starting IP addresses normalization...", "green")
-        # Normalize IP addresses in given file and store result into the temporary file
         normalize_ip_addresses(tmp_capture_2, tmp_capture_1, configuration)
 
-    # Check configuration if MAC addresses are defined
     if "MAC" in configuration:
-        # Show initial info
         cprint("[info] Starting MAC addresses normalization...", "green")
-        # Normalize MAC addresses in given file and store result into the temporary file
         normalize_mac_addresses(tmp_capture_1, tmp_capture_2, configuration)
 
-    # Convert normalized capture to PCAP-Ng format
     cprint("[info] Converting output file to PCAP-Ng format...", "green")
     convert_to_pcapng(tmp_capture_2, args.output_file)
 
-    # Remove temporary capture files
     os.remove(tmp_capture_1)
     os.remove(tmp_capture_2)
 
-    # Show final message
     cprint("[info] Trace file normalized!", "green")

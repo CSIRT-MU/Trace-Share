@@ -28,22 +28,12 @@
   creator: true
 
 - name: defender
-  # Select Vagrant guest virtual machine box.
-  # You can search for boxes at https://atlas.hashicorp.com/search
   box: ubuntu/bionic64
   box_url: ubuntu/bionic64
-  # Selected IP addresses should not exists in your current network
   ip: 203.0.113.101
-  # Mask of the virtual private network
   mask: 255.255.255.0  
-  # Number of virtual CPUs
   cpu: 1
-  # Size of main memory is in MB
   memory: 1024
-  # Ansible provision file (provisioned before bash)
   ansible: configuration/provision/ansible/defender.yml
-  # Bash provision file
   bash: configuration/provision/bash/defender.sh
-  # Indicate if run trace-creator capture script.
-  # Only one guest can have capture set to "true"! The guest will be deployed as last.
   creator: false
