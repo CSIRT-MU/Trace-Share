@@ -1,2 +1,4 @@
 # Ignore PyCharm .idea directory
 .idea/
+# Ignore Vagrant directory
+.vagrant/
