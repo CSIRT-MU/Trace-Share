@@ -73,7 +73,7 @@ class TraceCreatorProvisioning
 	end
 
 
-	def provision_ansible(vagrant_guest, playbook)
+	def provision_ansible(vagrant_guest, playbook, requirements)
 		# """
 		# Add Ansible provisioning configuration to the given guest.
 		#
@@ -81,11 +81,13 @@ class TraceCreatorProvisioning
 		#
 		# :param vagrant_guest: initialized Vagrant guest
 		# :param playbook: Ansible playbook
+    # :param requirements: Ansible galaxy role requirements
 		# """
 		if playbook
 			vagrant_guest.vm.provision :ansible_local do |ansible|
 				ansible.install_mode = "pip"
-				ansible.become = true
+        ansible.compatibility_mode = "2.0"
+        ansible.galaxy_role_file = requirements        
 				ansible.playbook = playbook
 			end
 		end
@@ -143,7 +145,8 @@ class TraceCreatorProvisioning
 					v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
 				end
 				
-				provision_ansible(guest, guest_config["ansible"])
+				provision_ansible(guest, guest_config["ansible"], 
+          guest_config["ansible_requirements"])
 				provision_bash(guest, guest_config["bash"])  
 				
 				# Check if start trace-creator script 

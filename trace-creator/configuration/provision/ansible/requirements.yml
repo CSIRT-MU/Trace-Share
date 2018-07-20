@@ -1,0 +1,5 @@
+---
+# See the following link to get more details about including of remote roles:
+# https://docs.ansible.com/ansible/latest/reference_appendices/galaxy.html#installing-multiple-roles-from-a-file
+
+- name: geerlingguy.apache

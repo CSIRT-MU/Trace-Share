@@ -19,8 +19,10 @@
   cpu: 1
   # Size of main memory is in MB
   memory: 1024
-  # Ansible provision file (provisioned before bash)
+  # Ansible playbook provision file (provisioned before bash)
   ansible: configuration/provision/ansible/attacker.yml
+  # Ansible requirements file (to include external roles)
+  ansible_requirements: null
   # Bash provision file
   bash: null
   # Indicate if run trace-creator capture script.
@@ -35,5 +37,6 @@
   cpu: 1
   memory: 1024
   ansible: configuration/provision/ansible/defender.yml
+  ansible_requirements: configuration/provision/ansible/requirements.yml
   bash: configuration/provision/bash/defender.sh
   creator: false

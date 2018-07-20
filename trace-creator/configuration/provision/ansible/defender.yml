@@ -1,4 +1,8 @@
 ---
 - hosts: all
+  become: true
   roles:
-    - trace-creator
+    - role: trace-creator
+    
+    - role: geerlingguy.apache
+      apache_listen_port: 80
