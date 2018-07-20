@@ -7,9 +7,9 @@
 # """
 ---
 
-# Generate capture for a "nmap -sW 203.0.113.101 -v" without any filter or additional provisioning
+# Generate capture for a "nmap 203.0.113.101 -v" without any filter or additional provisioning
 - name: Simple nmap
-  command: nmap -sW 203.0.113.101 -v
+  command: nmap 203.0.113.101 -v
 
 # Update state of guests and generate capture for a "nmap -sW 203.0.113.101 -v" without ICMP traffic.
 - name: Nmap without ICMP
