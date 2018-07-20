@@ -2,3 +2,5 @@
 .idea/
 # Ignore Vagrant directory
 .vagrant/
+# Ignore capture directory
+capture/
