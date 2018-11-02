@@ -2,7 +2,6 @@
 
 The open platform for creation and sharing of network traffic traces.
 
-&nbsp;
 
 ## About the project
 
