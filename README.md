@@ -2,6 +2,8 @@
 
 The open platform for creation and sharing of network traffic traces.
 
+&nbsp;
+
 ## About the project
 
 Research validation and verification are fundamental principles of good scientific work. In terms of research in the area of network traffic measurement and analysis, however, these principles pose a great challenge. The research heavily depends not only on the correct processes of data usage but also on the availability of network traffic datasets that meet the common requirements and are publicly available. Without these datasets, we will never be able to reliably repeat, validate, and analyze research results.
@@ -23,4 +25,4 @@ If you are interested in creation and normalization of network traces, check out
 
 ## Cooperation
 
-Are you interested in research collaboration or want to contribute? Don't hesitate to contact us at [https://csirt.muni.cz](https://csirt.muni.cz/about-us/contact?lang=en).
+**Are you interested in research collaboration or want to contribute? Don't hesitate to contact us at [https://csirt.muni.cz](https://csirt.muni.cz/about-us/contact?lang=en)!**
