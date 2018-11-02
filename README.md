@@ -1,6 +1,6 @@
 <img src="https://is.muni.cz/www/325314/logo.png" width="50%"/>
 
-The open platform for creation and sharing of network traffic traces.
+An open platform for creation and sharing of network traffic traces.
 
 
 ## About the project
