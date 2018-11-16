@@ -105,16 +105,16 @@ def process_tshark_conversations(tshark_output):
         fields = re.split("[: ]+", line)
         conversation = {
             "IP A": fields[0],
-            "Port A": fields[1],
+            "Port A": int(fields[1]),
             "IP B": fields[3],
-            "Port B": fields[4],
-            "Frames B-A": fields[5],
-            "Bytes B-A": fields[6],
-            "Frames A-B": fields[7],
-            "Bytes A-B": fields[8],
-            "Frames": fields[9],
-            "Bytes": fields[10],
-            "Relative start": fields[11]
+            "Port B": int(fields[4]),
+            "Frames B-A": int(fields[5]),
+            "Bytes B-A": int(fields[6]),
+            "Frames A-B": int(fields[7]),
+            "Bytes A-B": int(fields[8]),
+            "Frames": int(fields[9]),
+            "Bytes": int(fields[10]),
+            "Relative start": float(fields[11].replace(',', '.'))
         }
         tshark_result.append(conversation)
     return tshark_result
