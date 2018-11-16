@@ -44,7 +44,6 @@ Requirements:
     * editcap
     * bittwiste
     * Python 3
-    * Python modules: termcolor
 
 Usage:
     $ ./trace-normalizer.py -i <input_capture_file> -o <output_capture_file> -c <configuration_json>
