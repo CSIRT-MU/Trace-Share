@@ -42,7 +42,6 @@ Requirements:
     * tshark
     * capinfos
     * Python 3
-    * Python modules: termcolor
 
 Usage:
     $ ./trace-analyzer.py -f <capture_file> -t -p -c
@@ -57,9 +56,6 @@ import shlex  # Split the string s using shell-like syntax
 import json  # JSON processing functions
 from distutils.spawn import find_executable  # Check if required tool is available in PATH
 
-# Additional python modules
-from termcolor import cprint  # Colors in the console output
-
 
 def check_requirements():
     """
@@ -73,19 +69,21 @@ def check_requirements():
     return True
 
 
-def run_command(command):
+def run_command(command, quiet):
     """
     Run given command and provide its output as a result.
 
     :param command: command to be run
+    :param quiet: set to true to not print any information output
     :return: command output or None if error occurred
     """
-    cprint("[info] Running command: " + command, "green")
+    if not quiet:
+        print("[info] Running command: " + command)
     command_process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = command_process.communicate()
 
     if stderr:
-        cprint("[error] Command \"{command}\" returned an error:\n{error}".format(command=command, error=stderr), "red")
+        print("[error] Command \"{command}\" returned an error:\n{error}".format(command=command, error=stderr))
         return None
     else:
         return stdout
@@ -122,15 +120,16 @@ def process_tshark_conversations(tshark_output):
     return tshark_result
 
 
-def get_tcp_conversations(filename):
+def get_tcp_conversations(filename, quiet):
     """
     Compute TCP conversations info and return result as dictionary.
 
     :param filename: capture file to compute TCP conversations on
+    :param quiet: set to true to not print any information output
     :return: TCP conversations stats as array of dictionaries or empty array if error occurred
     """
     command = "tshark -r {filename} -q -z conv,tcp".format(filename=filename)
-    command_output = run_command(command)
+    command_output = run_command(command, quiet)
 
     if command_output:
         return process_tshark_conversations(command_output)
@@ -155,15 +154,16 @@ def process_capture_file_properties(capinfos_output):
     return capinfos_result
 
 
-def get_capture_file_properties(filename):
+def get_capture_file_properties(filename, quiet):
     """
     Provide information about the capture file.
 
     :param filename: capture file to analyse
+    :param quiet: set to true to not print any information output
     :return: dictionary object with file properties or or empty dictionary if error occurred
     """
     command = "capinfos -S -M {filename}".format(filename=filename)
-    command_output = run_command(command)
+    command_output = run_command(command, quiet)
 
     if command_output:
         return process_capture_file_properties(command_output)
@@ -193,17 +193,18 @@ def process_mac_ip_pairs(tshark_output):
     return tshark_result
 
 
-def get_mac_ip_pairs(filename):
+def get_mac_ip_pairs(filename, quiet):
     """
     Compute mapping of MAC-IP addresses.
 
     :param filename: capture file to analyse
+    :param quiet: set to true to not print any information output
     :return: MAC-IP mapping as array of dictionaries or empty array if error occurred
     """
     command_src = "tshark -nr {filename} -T fields -e eth.src -e ip.src -E separator=/t".format(filename=filename)
     command_dst = "tshark -nr {filename} -T fields -e eth.dst -e ip.dst -E separator=/t".format(filename=filename)
-    command_src_output = run_command(command_src)
-    command_dst_output = run_command(command_dst)
+    command_src_output = run_command(command_src, quiet)
+    command_dst_output = run_command(command_dst, quiet)
 
     pairs_result = []
     if command_src_output:
@@ -224,20 +225,22 @@ if __name__ == "__main__":
                         action='store_true', required=False)
     parser.add_argument("-c", "--capture_info", help="Show capture file properties.",
                         action='store_true', required=False)
+    parser.add_argument("-q", "--quiet", help="Do not print any information",
+                        action='store_true', required=False)
     args = parser.parse_args()
 
     if not check_requirements():
-        cprint("[error] Script requirements not satisfied. Please install \"tshark\" and \"capinfos\" tools!", "red")
+        print("[error] Script requirements not satisfied. Please install \"tshark\" and \"capinfos\" tools!")
         sys.exit(1)
 
     if args.tcp_conversations:
-        tcp_conversations = get_tcp_conversations(args.filename)
-        cprint(json.dumps(tcp_conversations), "white")
+        tcp_conversations = get_tcp_conversations(args.filename, args.quiet)
+        print(json.dumps(tcp_conversations))
 
     if args.pairs_mac_ip:
-        mac_ip_pairs = get_mac_ip_pairs(args.filename)
-        cprint(json.dumps(mac_ip_pairs), "white")
+        mac_ip_pairs = get_mac_ip_pairs(args.filename, args.quiet)
+        print(json.dumps(mac_ip_pairs))
 
     if args.capture_info:
-        capture_info = get_capture_file_properties(args.filename)
-        cprint(json.dumps(capture_info), "white")
+        capture_info = get_capture_file_properties(args.filename, args.quiet)
+        print(json.dumps(capture_info))
