@@ -150,6 +150,9 @@ def process_capture_file_properties(capinfos_output):
     capinfos_result = {}
     for line in output_lines:
         fields = re.split(":\s+", line, 1)
+        if "Interface" in fields[0]:
+            # Do not process interface info
+            break
         capinfos_result[fields[0]] = fields[1]
     return capinfos_result
 
