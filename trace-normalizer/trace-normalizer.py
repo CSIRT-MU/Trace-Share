@@ -201,35 +201,38 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Define names for temporary capture files
-    tmp_capture_1 = "normalizer_tmp_capture-1.pcap"
-    tmp_capture_2 = "normalizer_tmp_capture-2.pcap"
+    tmp_capture_in = "normalizer_tmp_capture_in.pcap"
+    tmp_capture_out = "normalizer_tmp_capture_out.pcap"
 
     # PCAP format is required by tcprewrite and bittwiste tools
     if not args.quiet:
         print("[info] Converting input file to PCAP format...")
-    convert_to_pcap(args.input_file, tmp_capture_1, args.quiet)
+    convert_to_pcap(args.input_file, tmp_capture_out, args.quiet)
+    os.rename(tmp_capture_out, tmp_capture_in)
 
     if "timestamp" in configuration:
         if not args.quiet:
             print("[info] Starting trace normalization...")
-        reset_timestamp(tmp_capture_1, tmp_capture_2, configuration, args.quiet)
+        reset_timestamp(tmp_capture_in, tmp_capture_out, configuration, args.quiet)
+        os.rename(tmp_capture_out, tmp_capture_in)
 
     if "IP" in configuration:
         if not args.quiet:
             print("[info] Starting IP addresses normalization...")
-        normalize_ip_addresses(tmp_capture_2, tmp_capture_1, configuration, args.quiet)
+        normalize_ip_addresses(tmp_capture_in, tmp_capture_out, configuration, args.quiet)
+        os.rename(tmp_capture_out, tmp_capture_in)
 
     if "MAC" in configuration:
         if not args.quiet:
             print("[info] Starting MAC addresses normalization...")
-        normalize_mac_addresses(tmp_capture_1, tmp_capture_2, configuration, args.quiet)
+        normalize_mac_addresses(tmp_capture_in, tmp_capture_out, configuration, args.quiet)
+        os.rename(tmp_capture_out, tmp_capture_in)
 
     if not args.quiet:
         print("[info] Converting output file to PCAP-Ng format...")
-    convert_to_pcapng(tmp_capture_2, args.output_file, args.quiet)
+    convert_to_pcapng(tmp_capture_in, args.output_file, args.quiet)
 
-    os.remove(tmp_capture_1)
-    os.remove(tmp_capture_2)
+    os.remove(tmp_capture_in)
 
     if not args.quiet:
         print("[info] Trace file normalized!")
