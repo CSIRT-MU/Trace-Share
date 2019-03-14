@@ -12,9 +12,14 @@ The main idea of Trace-Share is based on annotated units of network traffic that
 **Details and main ideas of the project are available in the publicly available publication [Towards Provable Network Traffic Measurement and Analysis via Semi-Labeled Trace Datasets](https://doi.org/10.23919/TMA.2018.8506498).**
 
 
+## New Project Repository
+
+The project grows, and we have decided to move it into the separate GitHub repository. To get updates about the project and check our progress see **[https://github.com/Trace-Share](https://github.com/Trace-Share)**!  
+
+
 ## Getting started
 
-The code in the repository is proof-of-concept implementation of basic ideas of the Trace-Share project. We are currently working on the web interface and tools, that will be easy to use by everyone. The results will appear in the repository soon. Stay tuned!
+The code in this repository is proof-of-concept implementation of basic ideas of the Trace-Share project. We are currently working on the web interface and tools, that will be easy to use by everyone. The results will appear in the repository soon. Stay tuned!
 
 If you are interested in creation and normalization of network traces, check out the foolowing subprojects:
 - [trace-creator](trace-creator) – virtual environment for the creation of packet traces
