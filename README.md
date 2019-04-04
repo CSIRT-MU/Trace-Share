@@ -2,6 +2,10 @@
 
 An open platform for creation and sharing of network traffic traces.
 
+## New Project Repository
+
+**The project grows, and we have decided to move it into the separate GitHub repository. To check our progress and get updates about the project see [https://github.com/Trace-Share](https://github.com/Trace-Share)**!  
+
 
 ## About the project
 
@@ -10,11 +14,6 @@ Research validation and verification are fundamental principles of good scientif
 The main idea of Trace-Share is based on annotated units of network traffic that can be synthetically generated, or derived from real-world traffic. These units typically contain only a minimum of personal data, so they can be shared and, thanks to the restrictions on the inclusion of interest-related traffic only, be easily annotated. They can be also easily normalized and combined with each other or with a real-world traffic to create semi-labeled datasets.
 
 **Details and main ideas of the project are available in the publicly available publication [Towards Provable Network Traffic Measurement and Analysis via Semi-Labeled Trace Datasets](https://doi.org/10.23919/TMA.2018.8506498).**
-
-
-## New Project Repository
-
-The project grows, and we have decided to move it into the separate GitHub repository. To get updates about the project and check our progress see **[https://github.com/Trace-Share](https://github.com/Trace-Share)**!  
 
 
 ## Getting started
